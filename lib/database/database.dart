@@ -9,10 +9,6 @@ class DatabaseHelper {
 
   String moviesTable = 'moviesTable';
   String colId = 'id';
-  String colTitle = 'title';
-  String colPosterPath = 'posterPath';
-  String colVoteAverage = 'voteAverage';
-  String colOverview = 'overview';
   String colUserReview = 'userReview';
   String colWatched = 'watched';
 
@@ -37,14 +33,25 @@ class DatabaseHelper {
 
   void _createDb(Database db, int version) async {
     await db.execute(
-      'CREATE TABLE $moviesTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colTitle TEXT, $colPosterPath TEXT, $colVoteAverage DOUBLE, $colOverview TEXT, $colUserReview TEXT, $colWatched INTEGER)',
+      'CREATE TABLE $moviesTable($colId INTEGER PRIMARY KEY, $colUserReview TEXT, $colWatched INTEGER)',
     );
   }
 
-  Future<int> insertMovie(Map<String, dynamic> movie) async {
+  Future<int> insertOrUpdateMovieReview(int id, String userReview, int watched) async {
     final db = await this.db;
-    final result = await db!.insert(moviesTable, movie);
-    return result;
+    final movie = {'id': id, 'userReview': userReview, 'watched': watched};
+
+    final existingMovie = await getMovie(id);
+    if (existingMovie != null) {
+      return await db!.update(
+        moviesTable,
+        movie,
+        where: '$colId = ?',
+        whereArgs: [id],
+      );
+    } else {
+      return await db!.insert(moviesTable, movie);
+    }
   }
 
   Future<Map<String, dynamic>?> getMovie(int id) async {
@@ -57,14 +64,14 @@ class DatabaseHelper {
     return result.isNotEmpty ? result.first : null;
   }
 
-  Future<int> updateMovie(Map<String, dynamic> movie) async {
+  Future<int> deleteMovie(int id) async {
     final db = await this.db;
-    final result = await db!.update(
+    final result = await db!.delete(
       moviesTable,
-      movie,
       where: '$colId = ?',
-      whereArgs: [movie[colId]],
+      whereArgs: [id],
     );
     return result;
   }
 }
+

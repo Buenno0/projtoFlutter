@@ -17,6 +17,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   final TextEditingController _reviewController = TextEditingController();
   bool _watched = false;
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
+  Map<String, dynamic>? _movieDetails;
 
   @override
   void initState() {
@@ -28,23 +29,35 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     final movieDetails = await _dbHelper.getMovie(widget.movie.id);
     if (movieDetails != null) {
       setState(() {
+        _movieDetails = movieDetails;
         _reviewController.text = movieDetails['userReview'] ?? '';
         _watched = movieDetails['watched'] == 1;
       });
     }
   }
 
-  void _saveMovieDetails() async {
-    final movieDetails = {
-      'id': widget.movie.id,
-      'title': widget.movie.title,
-      'posterPath': widget.movie.posterPath,
-      'voteAverage': widget.movie.voteAverage,
-      'overview': widget.movie.overview,
-      'userReview': _reviewController.text,
-      'watched': _watched ? 1 : 0,
-    };
-    await _dbHelper.insertMovie(movieDetails);
+  void _saveReview() async {
+    await _dbHelper.insertOrUpdateMovieReview(
+      widget.movie.id,
+      _reviewController.text,
+      _watched ? 1 : 0,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Resenha salva com sucesso!')),
+    );
+    _loadMovieDetails();
+  }
+
+  void _deleteReview() async {
+    await _dbHelper.deleteMovie(widget.movie.id);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Resenha excluída com sucesso!')),
+    );
+    setState(() {
+      _reviewController.clear();
+      _watched = false;
+      _movieDetails = null;
+    });
   }
 
   @override
@@ -88,7 +101,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 ),
                 SizedBox(width: 4.0),
                 Text(
-                  'Avaliaçao: ${widget.movie.voteAverage}',
+                  'Avaliação: ${widget.movie.voteAverage}',
                   style: TextStyle(
                     fontSize: 16.0,
                     color: Colors.grey[600],
@@ -145,10 +158,64 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               ],
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _saveMovieDetails,
-              child: Text('Salvar'),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: _saveReview,
+                  child: Text('Salvar'),
+                ),
+                SizedBox(width: 8.0),
+                if (_movieDetails != null)
+                  ElevatedButton(
+                    onPressed: _deleteReview,
+                    child: Text('Excluir'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                  ),
+              ],
             ),
+            SizedBox(height: 16.0),
+            if (_movieDetails != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Resenha atual:',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  Text(
+                    _movieDetails!['userReview'] ?? '',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  Row(
+                    children: [
+                      Text(
+                        'Assistido: ',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Icon(
+                        _movieDetails!['watched'] == 1
+                            ? Icons.check
+                            : Icons.close,
+                        color: _movieDetails!['watched'] == 1
+                            ? Colors.green
+                            : Colors.red,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
           ],
         ),
       ),
