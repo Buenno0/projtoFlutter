@@ -15,9 +15,9 @@ class MovieListView extends StatelessWidget {
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(Icons.movie), // Ícone relacionado a filmes no cabeçalho
+            Icon(Icons.local_fire_department), // Ícone relacionado a filmes no cabeçalho
             SizedBox(width: 8),
-            Text('Filmes'), // Título do cabeçalho
+            Text('Filmes mais populares do momento'), // Título do cabeçalho
           ],
         ),
       ),

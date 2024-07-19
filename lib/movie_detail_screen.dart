@@ -64,7 +64,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.movie.title),
+        title: Text(widget.movie.title, style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.deepPurpleAccent,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -73,7 +74,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           children: [
             Center(
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(16.0),
                 child: CachedNetworkImage(
                   imageUrl: '${ApiConfig.imageBaseUrl}${widget.movie.posterPath}',
                   width: 200,
@@ -88,6 +89,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             Text(
               widget.movie.title,
               style: TextStyle(
+                fontFamily: 'Raleway',
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -103,6 +105,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 Text(
                   'Avaliação: ${widget.movie.voteAverage}',
                   style: TextStyle(
+                    fontFamily: 'Raleway',
                     fontSize: 16.0,
                     color: Colors.grey[600],
                   ),
@@ -113,6 +116,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             Text(
               'Sobre o filme:',
               style: TextStyle(
+                fontFamily: 'Raleway',
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -121,22 +125,29 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             Text(
               widget.movie.overview,
               style: TextStyle(
+                fontFamily: 'Raleway',
                 fontSize: 16.0,
+                color: Colors.grey[700],
+                height: 1.5,
               ),
             ),
             SizedBox(height: 16.0),
             Text(
               'Sua Avaliação:',
               style: TextStyle(
+                fontFamily: 'Raleway',
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            SizedBox(height: 8.0),
             TextField(
               controller: _reviewController,
               maxLines: 4,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
                 hintText: 'Escreva sua avaliação aqui...',
               ),
             ),
@@ -153,7 +164,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 ),
                 Text(
                   'Já assisti',
-                  style: TextStyle(fontSize: 16.0),
+                  style: TextStyle(fontFamily: 'Raleway', fontSize: 16.0),
                 ),
               ],
             ),
@@ -163,6 +174,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 ElevatedButton(
                   onPressed: _saveReview,
                   child: Text('Salvar'),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    backgroundColor: Colors.deepPurple.shade50,
+                  ),
                 ),
                 SizedBox(width: 8.0),
                 if (_movieDetails != null)
@@ -170,7 +187,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                     onPressed: _deleteReview,
                     child: Text('Excluir'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      backgroundColor: Colors.redAccent,
                     ),
                   ),
               ],
@@ -183,6 +203,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                   Text(
                     'Resenha atual:',
                     style: TextStyle(
+                      fontFamily: 'Raleway',
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -191,7 +212,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                   Text(
                     _movieDetails!['userReview'] ?? '',
                     style: TextStyle(
+                      fontFamily: 'Raleway',
                       fontSize: 16.0,
+                      color: Colors.grey[700],
                     ),
                   ),
                   SizedBox(height: 8.0),
@@ -200,6 +223,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       Text(
                         'Assistido: ',
                         style: TextStyle(
+                          fontFamily: 'Raleway',
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold,
                         ),
