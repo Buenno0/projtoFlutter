@@ -11,9 +11,10 @@ class MovieExplorerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Movie Explorer',
+      title: 'Explorador de Filmes',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: MovieExplorerHomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -39,7 +40,7 @@ class _MovieExplorerHomePageState extends State<MovieExplorerHomePage> {
         movies = fetchedMovies;
       });
     } catch (e) {
-      print('Error fetching movies: $e');
+      print('Erro ao procurar filmes: $e');
     }
   }
 
