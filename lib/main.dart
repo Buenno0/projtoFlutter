@@ -7,8 +7,6 @@ void main() {
   runApp(MovieExplorerApp());
 }
 
-
-
 class MovieExplorerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -19,8 +17,6 @@ class MovieExplorerApp extends StatelessWidget {
     );
   }
 }
-
-
 
 class MovieExplorerHomePage extends StatefulWidget {
   @override
@@ -51,7 +47,7 @@ class _MovieExplorerHomePageState extends State<MovieExplorerHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Movie Explorer'),
+        title: Text('Explorador de filmes'),
       ),
       body: MovieListView(movies: movies),
     );
