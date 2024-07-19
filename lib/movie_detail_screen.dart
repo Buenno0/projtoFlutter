@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:projeto_final/api_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:projeto_final/models/movie.dart';
-import 'package:projeto_final/database/database_helper.dart';
+import 'package:projeto_final/database/database.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final Movie movie;
