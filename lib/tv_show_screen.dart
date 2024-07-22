@@ -1,33 +1,45 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:projeto_final/api_config.dart';
-import 'models/movie.dart';
-import 'movie_detail_screen.dart';
+import 'package:projeto_final/api_config.dart'; // Supondo que você tenha uma configuração de API semelhante para imagens
+import 'package:projeto_final/tv_show_detail_screen.dart';
+import 'package:projeto_final/tv_show_service.dart';
+import 'models/tv_show.dart';
+ // Crie uma tela de detalhes de séries se necessário
 
-class MovieListView extends StatelessWidget {
-  final List<Movie> movies;
-
-  const MovieListView({required this.movies});
-
+class PopularTVShowsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: ListView.builder(
-            itemCount: movies.length,
-            itemBuilder: (context, index) {
-              final movie = movies[index];
-              return MovieCard(
-                movie: movie,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MovieDetailScreen(movie: movie),
-                  ),
-                ),
-              );
+          child: FutureBuilder<List<TVShow>>(
+            future: TVShowService.fetchTopRatedTVShows(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Erro: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('Nenhuma série encontrada'));
+              } else {
+                final tvShows = snapshot.data!;
+                return ListView.builder(
+                  itemCount: tvShows.length,
+                  itemBuilder: (context, index) {
+                    final tvShow = tvShows[index];
+                    return TVShowCard(
+                      tvShow: tvShow,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TVShowDetailScreen(tvShow: tvShow),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
             },
           ),
         ),
@@ -36,11 +48,11 @@ class MovieListView extends StatelessWidget {
   }
 }
 
-class MovieCard extends StatelessWidget {
-  final Movie movie;
+class TVShowCard extends StatelessWidget {
+  final TVShow tvShow;
   final VoidCallback onTap;
 
-  const MovieCard({required this.movie, required this.onTap});
+  const TVShowCard({required this.tvShow, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +68,7 @@ class MovieCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: CachedNetworkImage(
-                imageUrl: '${ApiConfig.imageBaseUrl}${movie.posterPath}',
+                imageUrl: '${ApiConfig.imageBaseUrl}${tvShow.posterPath}',
                 width: 100,
                 height: 150,
                 fit: BoxFit.cover,
@@ -70,9 +82,9 @@ class MovieCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Hero(
-                    tag: 'movieTitle-${movie.id}',
+                    tag: 'tvShowTitle-${tvShow.id}',
                     child: Text(
-                      movie.title,
+                      tvShow.name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16.0,
@@ -83,7 +95,7 @@ class MovieCard extends StatelessWidget {
                   ),
                   SizedBox(height: 4.0),
                   Text(
-                    movie.overview,
+                    tvShow.overview,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 14.0, color: Colors.grey[600]),
@@ -105,7 +117,7 @@ class MovieCard extends StatelessWidget {
                       ),
                       SizedBox(width: 4.0),
                       Text(
-                        '${movie.voteAverage}',
+                        '${tvShow.voteAverage}',
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.0),
                       ),
                     ],

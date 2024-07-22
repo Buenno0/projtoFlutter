@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ionicons/ionicons.dart';
 import 'movie_list_view.dart';
 import 'movie_service.dart';
 import 'models/movie.dart';
@@ -12,9 +13,46 @@ class MovieExplorerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Explorador de Filmes',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: MovieExplorerHomePage(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.light,
+        ),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: HomePage(),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Explorador de Filmes'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MovieExplorerHomePage()),
+            );
+          },
+          icon: Icon(
+            Ionicons.flame_outline,
+            size: 30,
+          ),
+          label: const Text('Filmes Populares'),
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            textStyle: TextStyle(fontSize: 18),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -48,7 +86,9 @@ class _MovieExplorerHomePageState extends State<MovieExplorerHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Explorador de filmes'),
+        title: Text('Filmes'),
+        centerTitle: true,
+        
       ),
       body: MovieListView(movies: movies),
     );

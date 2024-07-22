@@ -1,63 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_final/api_config.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:projeto_final/models/movie.dart';
+import 'package:projeto_final/api_config.dart';
+import 'package:projeto_final/models/tv_show.dart';
 import 'package:projeto_final/database/database.dart';
 import 'package:intl/intl.dart';
 
-class MovieDetailScreen extends StatefulWidget {
-  final Movie movie;
+class TVShowDetailScreen extends StatefulWidget {
+  final TVShow tvShow;
 
-  const MovieDetailScreen({required this.movie});
+  const TVShowDetailScreen({required this.tvShow});
 
   @override
-  _MovieDetailScreenState createState() => _MovieDetailScreenState();
+  _TVShowDetailScreenState createState() => _TVShowDetailScreenState();
 }
 
-class _MovieDetailScreenState extends State<MovieDetailScreen> {
+class _TVShowDetailScreenState extends State<TVShowDetailScreen> {
   final TextEditingController _reviewController = TextEditingController();
   bool _watched = false;
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
-  Map<String, dynamic>? _movieDetails;
+  Map<String, dynamic>? _tvShowDetails;
 
   @override
   void initState() {
     super.initState();
-    _loadMovieDetails();
+    _loadTVShowDetails();
   }
 
-  void _loadMovieDetails() async {
-    final movieDetails = await _dbHelper.getMovie(widget.movie.id);
-    if (movieDetails != null) {
+  void _loadTVShowDetails() async {
+    final tvShowDetails = await _dbHelper.getTVShow(widget.tvShow.id);
+    if (tvShowDetails != null) {
       setState(() {
-        _movieDetails = movieDetails;
-        _reviewController.text = movieDetails['userReview'] ?? '';
-        _watched = movieDetails['watched'] == 1;
+        _tvShowDetails = tvShowDetails;
+        _reviewController.text = tvShowDetails['userReview'] ?? '';
+        _watched = tvShowDetails['watched'] == 1;
       });
     }
   }
 
   void _saveReview() async {
-    await _dbHelper.insertOrUpdateMovieReview(
-      widget.movie.id,
+    await _dbHelper.insertOrUpdateTVShowReview(
+      widget.tvShow.id,
       _reviewController.text,
       _watched ? 1 : 0,
     );
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Resenha salva com sucesso!')),
     );
-    _loadMovieDetails();
+    _loadTVShowDetails();
   }
 
   void _deleteReview() async {
-    await _dbHelper.deleteMovie(widget.movie.id);
+    await _dbHelper.deleteTVShow(widget.tvShow.id);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Resenha excluída com sucesso!')),
     );
     setState(() {
       _reviewController.clear();
       _watched = false;
-      _movieDetails = null;
+      _tvShowDetails = null;
     });
   }
 
@@ -66,7 +66,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.movie.title,
+          widget.tvShow.name,
           style: TextStyle(
             fontFamily: 'Raleway',
             fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16.0),
                 child: CachedNetworkImage(
-                  imageUrl: '${ApiConfig.imageBaseUrl}${widget.movie.posterPath}',
+                  imageUrl: '${ApiConfig.imageBaseUrl}${widget.tvShow.posterPath}',
                   width: 200,
                   height: 300,
                   fit: BoxFit.cover,
@@ -97,7 +97,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             ),
             SizedBox(height: 16.0),
             Text(
-              widget.movie.title,
+              widget.tvShow.name,
               style: TextStyle(
                 fontFamily: 'Raleway',
                 fontSize: 24.0,
@@ -105,7 +105,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 color: Colors.black87,
               ),
             ),
-             SizedBox(height: 8.0),
+            SizedBox(height: 8.0),
             Row(
               children: [
                 Icon(
@@ -114,47 +114,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 ),
                 SizedBox(width: 8.0),
                 Text(
-                  'Data de lançamento: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.movie.releaseDate))}',
-                  style: TextStyle(
-                    fontFamily: 'Raleway',
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                    color: const Color.fromARGB(255, 0, 0, 0),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8.0),
-            Row(
-              children: [
-                Icon(
-                  Icons.category,
-                  color: Colors.black87,
-                ),
-                SizedBox(width: 8.0),
-                Text(
-                  'Gênero(s): ${widget.movie.genres.join(', ')}',
-                  style: TextStyle(
-                    fontFamily: 'Raleway',
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
-                    color: const Color.fromARGB(255, 0, 0, 0),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8.0),
-            Row (
-              children: [
-                Icon(
-                  Icons.timer,
-                  color: Colors.black87,
-                ),
-                SizedBox(width: 8.0),
-                Text(
-                  'Duração: ${widget.movie.runtime} min',
+                  'Data de estreia: ${DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.tvShow.firstAirDate))}',
                   style: TextStyle(
                     fontFamily: 'Raleway',
                     fontSize: 14.0,
@@ -174,7 +134,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                 ),
                 SizedBox(width: 4.0),
                 Text(
-                  'Avaliação: ${widget.movie.voteAverage}',
+                  'Avaliação: ${widget.tvShow.voteAverage}',
                   style: TextStyle(
                     fontFamily: 'Raleway',
                     fontSize: 16.0,
@@ -185,7 +145,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             ),
             SizedBox(height: 8.0),
             Text(
-              'Sobre o filme:',
+              'Sobre a série:',
               style: TextStyle(
                 fontFamily: 'Raleway',
                 fontSize: 18.0,
@@ -195,7 +155,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             ),
             SizedBox(height: 8.0),
             Text(
-              widget.movie.overview,
+              widget.tvShow.overview,
               style: TextStyle(
                 fontFamily: 'Raleway',
                 fontSize: 16.0,
@@ -260,7 +220,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                   ),
                 ),
                 SizedBox(width: 8.0),
-                if (_movieDetails != null)
+                if (_tvShowDetails != null)
                   ElevatedButton(
                     onPressed: _deleteReview,
                     child: Text('Excluir'),
@@ -275,7 +235,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               ],
             ),
             SizedBox(height: 16.0),
-            if (_movieDetails != null)
+            if (_tvShowDetails != null)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -290,7 +250,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                   ),
                   SizedBox(height: 8.0),
                   Text(
-                    _movieDetails!['userReview'] ?? '',
+                    _tvShowDetails!['userReview'] ?? '',
                     style: TextStyle(
                       fontFamily: 'Raleway',
                       fontSize: 16.0,
@@ -310,10 +270,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         ),
                       ),
                       Icon(
-                        _movieDetails!['watched'] == 1
+                        _tvShowDetails!['watched'] == 1
                             ? Icons.check
                             : Icons.close,
-                        color: _movieDetails!['watched'] == 1
+                        color: _tvShowDetails!['watched'] == 1
                             ? Colors.green
                             : Colors.red,
                       ),
