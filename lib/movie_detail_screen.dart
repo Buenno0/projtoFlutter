@@ -17,6 +17,7 @@ class MovieDetailScreen extends StatefulWidget {
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   final TextEditingController _reviewController = TextEditingController();
   bool _watched = false;
+  bool _isEditing = false;
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
   Map<String, dynamic>? _movieDetails;
 
@@ -46,6 +47,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Resenha salva com sucesso!')),
     );
+    setState(() {
+      _isEditing = false;
+    });
     _loadMovieDetails();
   }
 
@@ -58,6 +62,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       _reviewController.clear();
       _watched = false;
       _movieDetails = null;
+      _isEditing = false;
+    });
+  }
+
+  void _toggleEditMode() {
+    setState(() {
+      _isEditing = !_isEditing;
     });
   }
 
@@ -217,6 +228,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             TextField(
               controller: _reviewController,
               maxLines: 4,
+              readOnly: !_isEditing,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
@@ -249,7 +261,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             Row(
               children: [
                 ElevatedButton(
-                  onPressed: _saveReview,
+                  onPressed: _isEditing ? _saveReview : null,
                   child: Text('Salvar'),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -272,10 +284,23 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       foregroundColor: Colors.black87,
                     ),
                   ),
+                SizedBox(width: 8.0),
+                if (_movieDetails != null)
+                  ElevatedButton(
+                    onPressed: _toggleEditMode,
+                    child: Text(_isEditing ? 'Cancelar' : 'Editar'),
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      backgroundColor: Colors.blue.shade100,
+                      foregroundColor: Colors.black87,
+                    ),
+                  ),
               ],
             ),
             SizedBox(height: 16.0),
-            if (_movieDetails != null)
+            if (_movieDetails != null && !_isEditing)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
