@@ -1,11 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:projeto_final/tv_show_screen.dart';
 import 'movie_list_view.dart';
 import 'movie_service.dart';
 import 'models/movie.dart';
-
 
 void main() {
   runApp(MovieExplorerApp());
