@@ -6,7 +6,6 @@ class TVShow {
   final double voteAverage; 
   final String firstAirDate; 
  
-
   TVShow({
     required this.id,
     required this.name,

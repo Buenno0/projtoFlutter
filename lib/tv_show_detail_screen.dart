@@ -210,7 +210,7 @@ class _TVShowDetailScreenState extends State<TVShowDetailScreen> {
               children: [
                 ElevatedButton(
                   onPressed: _saveReview,
-                  child: Text('Salvar'),
+                  child: Text(_tvShowDetails == null ? 'Salvar' : 'Salvar Alterações'),
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
